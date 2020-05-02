@@ -12,9 +12,9 @@ pub use crate::{
 use bstr::BString;
 
 /// The maximum length of a file name, including path and slashes.
-pub const MAX_NAME_LEN: usize = u8::MAX as usize;
+pub const MAX_NAME_LEN: usize = std::u8::MAX as usize;
 /// The maximum data, in bytes, a single file in a pak file can hold.
-pub const MAX_DATA_LEN: usize = u32::MAX as usize;
+pub const MAX_DATA_LEN: usize = std::u32::MAX as usize;
 /// The magic number of a valid pak file. `[0xc0, 0x4a, 0xc0, 0xba]` XORed with `0xf7`, or "7½7M". This file type is often called "7x7M" as a result.
 pub const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
 /// The version of pakfile that this library can read. `[0; 4]`.
