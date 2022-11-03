@@ -8,14 +8,10 @@ pub(crate) mod writer;
 pub use crate::{entry::Entry, pak::Pak};
 use bstr::BString;
 
-/// The maximum length of a file name, including path and slashes.
-pub const MAX_NAME_LEN: usize = std::u8::MAX as usize;
-/// The maximum data, in bytes, a single file in a pak file can hold.
-pub const MAX_DATA_LEN: usize = std::u32::MAX as usize;
 /// The magic number of a valid pak file. `[0xc0, 0x4a, 0xc0, 0xba]` XORed with `0xf7`, or "7½7M". This file type is often called "7x7M" as a result.
-pub const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
+pub(crate) const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
 /// The version of pakfile that this library can read. `[0; 4]`.
-pub const VERSION: &[u8] = &[0; 4];
+pub(crate) const VERSION: &[u8] = &[0; 4];
 
 const FILEFLAGS_END: u8 = 0x80;
 
@@ -35,20 +31,65 @@ pub enum PakError {
     /// IO errors that may occur during use
     Io(std::io::Error),
 
-    /// Invalid Magic number. See [`MAGIC`].
+    /// Invalid Magic number.
+    ///
+    /// See [`MAGIC`].
     InvalidMagic([u8; 4]),
-    /// Invalid Pak Version. See [`VERSION`].
+
+    /// Invalid Pak Version.
+    ///
+    /// See [`VERSION`].
     InvalidVersion([u8; 4]),
 
-    /// The filename is too long. See [`MAX_NAME_LEN`].
-    InvalidNameLength(usize),
-    /// The data is too long. See [`MAX_DATA_LEN`].
+    /// The filename is too long.
+    ///
+    /// See [`MAX_NAME_LEN`].
+    InvalidFileNameLength {
+        length: usize,
+        error: std::num::TryFromIntError,
+    },
+
+    /// The data is too long.
+    ///
+    /// See [`MAX_DATA_LEN`].
     InvalidDataLength(usize),
 }
 
 impl From<std::io::Error> for PakError {
     fn from(e: std::io::Error) -> Self {
         Self::Io(e)
+    }
+}
+
+impl std::fmt::Display for PakError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Io(e) => e.fmt(f),
+            Self::InvalidMagic(magic) => write!(
+                f,
+                "invalid magic number '{:?}', expected '{:?}'",
+                magic, MAGIC
+            ),
+            Self::InvalidVersion(version) => write!(
+                f,
+                "invalid version '{:?}', expected '{:?}'",
+                version, VERSION
+            ),
+            Self::InvalidFileNameLength { length, .. } => {
+                write!(f, "invalid file name length '{}'", length)
+            }
+            Self::InvalidDataLength(length) => write!(f, "invalid data length '{}'", length),
+        }
+    }
+}
+
+impl std::error::Error for PakError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Io(error) => Some(error),
+            Self::InvalidFileNameLength { error, .. } => Some(error),
+            _ => None,
+        }
     }
 }
 
