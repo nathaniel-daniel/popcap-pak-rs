@@ -1,25 +1,12 @@
 use crate::{
-    entry::Entry,
-    reader::PakReader,
-    writer::PakWriter,
-    PakError,
-    PakResult,
-    FILEFLAGS_END,
-    MAGIC,
+    entry::Entry, reader::PakReader, writer::PakWriter, PakError, PakResult, FILEFLAGS_END, MAGIC,
     VERSION,
 };
-use byteorder::{
-    WriteBytesExt,
-    LE,
-};
-use std::{
-    convert::TryInto,
-    io::{
-        Cursor,
-        Read,
-        Write,
-    },
-};
+use byteorder::WriteBytesExt;
+use byteorder::LE;
+use std::io::Cursor;
+use std::io::Read;
+use std::io::Write;
 
 /// An In-memory pakfile. It may reference borrowed data to avoid decrypting the entire file in memory all at once.
 #[derive(Debug, PartialEq)]
@@ -56,9 +43,10 @@ impl<'a> Pak<'a> {
     }
 
     /// Read a pakfile from a byte slice. Returns a pakfile that borrows sections of data from the slice.
+    ///
     /// Compared to [`Pak::from_read`], this takes less time to load, but reading takes slightly longer and manipulations require copying and decrypting the data.
     pub fn from_bytes(bytes: &'a [u8]) -> Result<Pak<'a>, PakError> {
-        let mut reader = PakReader::new(&*bytes);
+        let mut reader = PakReader::new(bytes);
         reader.read_magic()?;
         reader.read_version()?;
 

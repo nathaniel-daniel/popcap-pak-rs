@@ -1,23 +1,14 @@
-use crate::{
-    MS_FILETIME_START_TICKS,
-    PATH_SEPERATOR_BYTESET,
-    TICKS_PER_NANOSECOND,
-    TICKS_PER_SECOND,
-};
-use bstr::{
-    BStr,
-    BString,
-    ByteSlice,
-};
-use chrono::NaiveDateTime;
-use std::{
-    borrow::Cow,
-    convert::TryFrom,
-    io::{
-        Cursor,
-        Read,
-    },
-};
+use crate::MS_FILETIME_START_TICKS;
+use crate::PATH_SEPERATOR_BYTESET;
+use crate::TICKS_PER_NANOSECOND;
+use bstr::BStr;
+use bstr::BString;
+use bstr::ByteSlice;
+use std::borrow::Cow;
+use std::io::Cursor;
+use std::io::Read;
+use std::time::Duration;
+use std::time::SystemTime;
 
 /// An Entry, representative of a file inside a pakfile.
 #[derive(Debug)]
@@ -49,18 +40,17 @@ impl<'a> Entry<'a> {
         (self.path.as_slice()).into()
     }
 
-    /// Try to get the last write time of this file as a [`NaiveDateTime`]. Returns [`None`] if the filetime is invalid and/or could not be converted.
-    pub fn filetime(&self) -> Option<NaiveDateTime> {
+    /// Try to get the last write time of this file as a [`SystemTime`].
+    ///
+    /// Returns [`None`] if the filetime is invalid and/or could not be converted.
+    pub fn filetime(&self) -> Option<SystemTime> {
         let filetime = i64::try_from(self.filetime).ok()? + MS_FILETIME_START_TICKS;
-        let filetime = NaiveDateTime::from_timestamp(
-            filetime / TICKS_PER_SECOND,
-            (filetime.abs() % TICKS_PER_SECOND) as u32 * TICKS_PER_NANOSECOND,
-        );
-        Some(filetime)
+        let offset = Duration::from_nanos(filetime as u64 * u64::from(TICKS_PER_NANOSECOND));
+        Some(SystemTime::UNIX_EPOCH + offset)
     }
 
     /// Get an iterator over all the bytes in the file.
-    pub fn iter_data<'b>(&'b self) -> impl Iterator<Item = u8> + 'b {
+    pub fn iter_data(&self) -> impl Iterator<Item = u8> + '_ {
         let borrowed = self.is_borrowed();
 
         self.data
