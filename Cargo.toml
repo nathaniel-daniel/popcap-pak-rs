@@ -2,6 +2,7 @@
 name = "popcap-pak"
 version = "0.0.0"
 edition = "2021"
+license = "MIT or Apache-2.0"
 
 [dependencies]
 bstr = "1.0.0"
