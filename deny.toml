@@ -45,7 +45,7 @@ license-files = [
 [bans]
 multiple-versions = "deny"
 highlight = "all"
-skip = [       ]
+skip = []
 
 [sources]
 unknown-registry = "warn"

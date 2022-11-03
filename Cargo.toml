@@ -1,8 +1,8 @@
 [package]
 name = "popcap-pak"
-version = "0.0.1"
+version = "0.0.0"
 authors = [ "adumbidiot <nathaniel.daniel23@outlook.com>" ]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 bstr = "1.0.0"

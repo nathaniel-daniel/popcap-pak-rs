@@ -3,11 +3,9 @@ use crate::{
 };
 use bstr::{BStr, BString, ByteSlice};
 use chrono::NaiveDateTime;
-use std::{
-    borrow::Cow,
-    convert::TryFrom,
-    io::{Cursor, Read},
-};
+use std::borrow::Cow;
+use std::io::Cursor;
+use std::io::Read;
 
 /// An Entry, representative of a file inside a pakfile.
 #[derive(Debug)]
@@ -50,7 +48,7 @@ impl<'a> Entry<'a> {
     }
 
     /// Get an iterator over all the bytes in the file.
-    pub fn iter_data<'b>(&'b self) -> impl Iterator<Item = u8> + 'b {
+    pub fn iter_data(&self) -> impl Iterator<Item = u8> + '_ {
         let borrowed = self.is_borrowed();
 
         self.data
