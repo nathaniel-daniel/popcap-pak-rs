@@ -5,10 +5,7 @@ pub mod pak;
 pub(crate) mod reader;
 pub(crate) mod writer;
 
-pub use crate::{
-    entry::Entry,
-    pak::Pak,
-};
+pub use crate::{entry::Entry, pak::Pak};
 use bstr::BString;
 
 /// The maximum length of a file name, including path and slashes.

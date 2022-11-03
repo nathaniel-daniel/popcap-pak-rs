@@ -1,16 +1,6 @@
-use crate::{
-    PakError,
-    PakResult,
-    Record,
-    FILEFLAGS_END,
-    MAGIC,
-    VERSION,
-};
+use crate::{PakError, PakResult, Record, FILEFLAGS_END, MAGIC, VERSION};
 use bstr::BString;
-use byteorder::{
-    ReadBytesExt,
-    LE,
-};
+use byteorder::{ReadBytesExt, LE};
 use std::io::Read;
 
 pub struct PakReader<R>(R);

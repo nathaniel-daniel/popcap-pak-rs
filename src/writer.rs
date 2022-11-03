@@ -1,13 +1,7 @@
-use crate::{
-    PakError,
-    PakResult,
-};
+use crate::{PakError, PakResult};
 use bstr::BStr;
 use byteorder::WriteBytesExt;
-use std::{
-    convert::TryInto,
-    io::Write,
-};
+use std::{convert::TryInto, io::Write};
 
 pub struct PakWriter<W>(W, Vec<u8>);
 

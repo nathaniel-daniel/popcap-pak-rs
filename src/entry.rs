@@ -1,22 +1,12 @@
 use crate::{
-    MS_FILETIME_START_TICKS,
-    PATH_SEPERATOR_BYTESET,
-    TICKS_PER_NANOSECOND,
-    TICKS_PER_SECOND,
+    MS_FILETIME_START_TICKS, PATH_SEPERATOR_BYTESET, TICKS_PER_NANOSECOND, TICKS_PER_SECOND,
 };
-use bstr::{
-    BStr,
-    BString,
-    ByteSlice,
-};
+use bstr::{BStr, BString, ByteSlice};
 use chrono::NaiveDateTime;
 use std::{
     borrow::Cow,
     convert::TryFrom,
-    io::{
-        Cursor,
-        Read,
-    },
+    io::{Cursor, Read},
 };
 
 /// An Entry, representative of a file inside a pakfile.

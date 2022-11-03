@@ -1,24 +1,11 @@
 use crate::{
-    entry::Entry,
-    reader::PakReader,
-    writer::PakWriter,
-    PakError,
-    PakResult,
-    FILEFLAGS_END,
-    MAGIC,
+    entry::Entry, reader::PakReader, writer::PakWriter, PakError, PakResult, FILEFLAGS_END, MAGIC,
     VERSION,
 };
-use byteorder::{
-    WriteBytesExt,
-    LE,
-};
+use byteorder::{WriteBytesExt, LE};
 use std::{
     convert::TryInto,
-    io::{
-        Cursor,
-        Read,
-        Write,
-    },
+    io::{Cursor, Read, Write},
 };
 
 /// An In-memory pakfile. It may reference borrowed data to avoid decrypting the entire file in memory all at once.
