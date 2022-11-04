@@ -6,6 +6,8 @@ const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const mode = process.env.NODE_ENV || 'development';
 const prod = mode === 'production';
 
+console.log(mode);
+
 module.exports = {
     entry: './index.js',
     output: {

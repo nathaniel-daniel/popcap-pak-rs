@@ -99,7 +99,7 @@ impl Pak {
                     }
                     HashMapEntry::Occupied(mut entry) => {
                         let weak_state = entry.get();
-                        let state = match weak_state.upgrade() {
+                        match weak_state.upgrade() {
                             Some(state) => state,
                             None => {
                                 let state = Rc::new(EntryState {
@@ -111,9 +111,7 @@ impl Pak {
 
                                 state
                             }
-                        };
-
-                        state
+                        }
                     }
                 };
 
@@ -159,12 +157,12 @@ impl Entry {
         let mut pak_state = self.pak_state.borrow_mut();
         let entry_idx = pak_state
             .get_entry_idx_by_path(self.path_raw())
-            .ok_or(JsError::new("failed to locate entry in PAK file"))?;
+            .ok_or_else(|| JsError::new("failed to locate entry in PAK file"))?;
         let entry = pak_state
             .pak
             .entries
             .get(entry_idx)
-            .ok_or(JsError::new("internal bug"))?;
+            .ok_or_else(|| JsError::new("internal bug"))?;
         Ok(func(entry))
     }
 }
