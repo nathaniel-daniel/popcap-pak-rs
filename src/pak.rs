@@ -20,12 +20,20 @@ pub struct Pak<'a> {
 }
 
 impl<'a> Pak<'a> {
-    /// Read a PAK file from a read source.
-    ///
-    /// Returns a PAK file with ownership over is data, decrypting it all upfront.
+    /// Make an empty PAK file.
+    pub fn new() -> Self {
+        Self {
+            entries: Vec::new(),
+        }
+    }
+
+    /// Read a PAK file from a reader.
     ///
     /// [`Pak::from_bytes`] should probably be preferred, as it is faster to load upfront, though reading takes slightly longer
     /// and manipulations will incur memory allocations and expensisve copying/decryption.
+    ///
+    /// # Returns
+    /// Returns a PAK file with ownership over is data, decrypting it all upfront.
     pub fn from_read<R: Read>(reader: R) -> Result<Pak<'static>, PakError> {
         let mut reader = PakReader::new(reader);
         reader.read_magic()?;

@@ -65,20 +65,16 @@ impl std::fmt::Display for PakError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Io(e) => e.fmt(f),
-            Self::InvalidMagic(magic) => write!(
-                f,
-                "invalid magic number '{:?}', expected '{:?}'",
-                magic, MAGIC
-            ),
-            Self::InvalidVersion(version) => write!(
-                f,
-                "invalid version '{:?}', expected '{:?}'",
-                version, VERSION
-            ),
-            Self::InvalidFileNameLength { length, .. } => {
-                write!(f, "invalid file name length '{}'", length)
+            Self::InvalidMagic(magic) => {
+                write!(f, "invalid magic number '{magic:?}', expected '{MAGIC:?}'",)
             }
-            Self::InvalidDataLength(length) => write!(f, "invalid data length '{}'", length),
+            Self::InvalidVersion(version) => {
+                write!(f, "invalid version '{version:?}', expected '{VERSION:?}'",)
+            }
+            Self::InvalidFileNameLength { length, .. } => {
+                write!(f, "invalid file name length '{length}'")
+            }
+            Self::InvalidDataLength(length) => write!(f, "invalid data length '{length}'"),
         }
     }
 }
