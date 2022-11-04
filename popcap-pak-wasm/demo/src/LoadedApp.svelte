@@ -54,7 +54,7 @@
         let isText = fileName.endsWith('.txt') || fileName.endsWith('.xml');
         let isSound = fileName.endsWith('.ogg') || fileName.endsWith('.au');
         
-        if(isImage) {
+        if (isImage) {
             fileType = 'image';
         } else if (isText) {
             fileType = 'text';

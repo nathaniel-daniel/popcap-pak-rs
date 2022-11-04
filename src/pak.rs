@@ -133,3 +133,9 @@ impl<'a> Pak<'a> {
         Ok(())
     }
 }
+
+impl<'a> Default for Pak<'a> {
+    fn default() -> Self {
+         Self::new()
+    }
+}
