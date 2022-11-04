@@ -1,7 +1,10 @@
-.PHONY: wasm serve-wasm-demo
+.PHONY: build-wasm setup-wasm-demo build-wasm-demo
 
-wasm:
+build-wasm:
 	wasm-pack build --release popcap-pak-wasm --out-dir pkg
 	
-serve-wasm-demo:
-	cd popcap-pak-wasm/demo && python -m http.server
+setup-wasm-demo:
+	cd popcap-pak-wasm/demo && npm install
+
+build-wasm-demo:
+	cd popcap-pak-wasm/demo && npm build
