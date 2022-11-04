@@ -97,7 +97,6 @@ struct Record {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bstr::ByteSlice;
     use std::path::Path;
 
     const EXTRACT_PATH: &str = "test-extract";
@@ -107,13 +106,23 @@ mod tests {
         let _ = std::fs::remove_dir_all(extract_dir);
 
         for entry in pak.entries.iter_mut() {
-            println!("Extracting '{}'...", entry.path());
-            if let Some(dir) = entry.dir() {
-                let entry_extract_dir = extract_dir.join(dir.to_path_lossy());
+            let entry_path = entry.path_str().unwrap();
+            let entry_dir = entry.dir_str().transpose().unwrap();
+            let entry_name = entry.name_str().unwrap();
+
+            let expected_entry_name = entry_path.rsplit(['/', '\\']).next().unwrap();
+            assert!(
+                expected_entry_name == entry_name,
+                "{expected_entry_name} != {entry_name}"
+            );
+
+            println!("Extracting '{}'...", entry_path);
+            if let Some(dir) = entry_dir {
+                let entry_extract_dir = extract_dir.join(dir);
                 std::fs::create_dir_all(&entry_extract_dir).unwrap();
             }
 
-            let entry_extract_path = extract_dir.join(entry.path().to_path_lossy());
+            let entry_extract_path = extract_dir.join(entry_path);
             let mut f = std::fs::File::create(&entry_extract_path).unwrap();
             std::io::copy(entry, &mut f).unwrap();
         }
