@@ -11,11 +11,12 @@ impl<W: Write> PakWriter<W> {
     }
 
     pub fn write_filename(&mut self, name: &BStr) -> PakResult<()> {
-        let name_len = name.len();
-        let name_len = name_len
+        let length = name.len();
+        let length = name
+            .len()
             .try_into()
-            .map_err(|_| PakError::InvalidNameLength(name_len))?;
-        self.write_u8(name_len)?;
+            .map_err(|error| PakError::InvalidFileNameLength { length, error })?;
+        self.write_u8(length)?;
         self.write_all(name)?;
         Ok(())
     }

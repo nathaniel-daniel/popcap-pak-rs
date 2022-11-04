@@ -8,18 +8,32 @@ use std::io::Cursor;
 use std::io::Read;
 use std::io::Write;
 
-/// An In-memory pakfile. It may reference borrowed data to avoid decrypting the entire file in memory all at once.
+/// An in-memory PAK file.
+///
+/// It may reference borrowed data to avoid decrypting the entire file in memory all at once.
 #[derive(Debug, PartialEq)]
 pub struct Pak<'a> {
-    /// All Entries in this pakfile. This will likely become private in the future and replaced by safer ways to interact with entries.
+    /// All entries in this PAK file.
+    ///
+    /// This will likely become private in the future and replaced by safer ways to interact with entries.
     pub entries: Vec<Entry<'a>>,
 }
 
 impl<'a> Pak<'a> {
-    /// Read a pakfile from a read source.
-    /// Returns a pakfile with ownership over is data, decrypting it all upfront.
+    /// Make an empty PAK file.
+    pub fn new() -> Self {
+        Self {
+            entries: Vec::new(),
+        }
+    }
+
+    /// Read a PAK file from a reader.
+    ///
     /// [`Pak::from_bytes`] should probably be preferred, as it is faster to load upfront, though reading takes slightly longer
     /// and manipulations will incur memory allocations and expensisve copying/decryption.
+    ///
+    /// # Returns
+    /// Returns a PAK file with ownership over is data, decrypting it all upfront.
     pub fn from_read<R: Read>(reader: R) -> Result<Pak<'static>, PakError> {
         let mut reader = PakReader::new(reader);
         reader.read_magic()?;
@@ -42,9 +56,14 @@ impl<'a> Pak<'a> {
         Ok(Pak { entries })
     }
 
-    /// Read a pakfile from a byte slice. Returns a pakfile that borrows sections of data from the slice.
+    /// Read a PAK file from a byte slice.
     ///
-    /// Compared to [`Pak::from_read`], this takes less time to load, but reading takes slightly longer and manipulations require copying and decrypting the data.
+    /// # Returns
+    /// Returns a PAK file that borrows sections of data from the slice.
+    ///
+    /// Compared to [`Pak::from_read`],
+    /// this takes less time to load,
+    /// but reading takes slightly longer and manipulations require copying and decrypting the data.
     pub fn from_bytes(bytes: &'a [u8]) -> Result<Pak<'a>, PakError> {
         let mut reader = PakReader::new(bytes);
         reader.read_magic()?;
@@ -70,7 +89,8 @@ impl<'a> Pak<'a> {
         Ok(Self { entries })
     }
 
-    /// Takes ownership of all data, decrypting it and returing an [`Pak`] that is guaranteed to not refernce external data.
+    /// Takes ownership of all data,
+    /// decrypting it and returing a [`Pak`] that is guaranteed to not reference external data.
     pub fn into_owned(self) -> Pak<'static> {
         let entries = self
             .entries
@@ -81,8 +101,14 @@ impl<'a> Pak<'a> {
         Pak { entries }
     }
 
-    /// Writes data to a writeable destination. This takes `&mut self` because at the end of this function, all files' cursors will be at the end of the stream.
-    pub fn write_to<W: Write>(&mut self, writer: W) -> PakResult<()> {
+    /// Writes data to a writeable destination.
+    ///
+    /// This takes `&mut self` because at the end of this function,
+    /// all files' cursors will be at the end of the stream.
+    pub fn write_to<W>(&mut self, writer: W) -> PakResult<()>
+    where
+        W: Write,
+    {
         let mut writer = PakWriter::new(writer);
         writer.write_all(MAGIC)?;
         writer.write_all(VERSION)?;
@@ -105,5 +131,11 @@ impl<'a> Pak<'a> {
         }
 
         Ok(())
+    }
+}
+
+impl<'a> Default for Pak<'a> {
+    fn default() -> Self {
+        Self::new()
     }
 }
