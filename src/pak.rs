@@ -54,7 +54,7 @@ impl<'a> Pak<'a> {
             reader.read_exact(&mut data)?;
 
             entries.push(Entry {
-                path: record.name,
+                path: record.name.into(),
                 filetime: record.filetime,
                 data: Cursor::new(data.into()),
             });
@@ -87,7 +87,7 @@ impl<'a> Pak<'a> {
             bytes = &bytes[len..];
 
             entries.push(Entry {
-                path: record.name,
+                path: record.name.into(),
                 filetime: record.filetime,
                 data: Cursor::new(data.into()),
             });
@@ -122,7 +122,7 @@ impl<'a> Pak<'a> {
 
         for entry in self.entries.iter() {
             writer.write_u8(0x00)?;
-            writer.write_filename(entry.path.as_slice())?;
+            writer.write_filename(&entry.path)?;
             writer.write_u32::<LE>(
                 entry
                     .size()

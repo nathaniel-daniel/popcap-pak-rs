@@ -9,7 +9,11 @@ use std::time::SystemTime;
 /// An Entry, representative of a file inside a pakfile.
 #[derive(Debug)]
 pub struct Entry<'a> {
-    pub(crate) path: Vec<u8>,
+    /// The "path" of the file.
+    ///
+    /// The encoding is unspecified,
+    /// but this is only ASCII in PopCap Games.
+    pub(crate) path: Box<[u8]>,
     pub(crate) filetime: u64,
     pub(crate) data: Cursor<Cow<'a, [u8]>>,
 }
@@ -41,7 +45,7 @@ impl<'a> Entry<'a> {
 
     /// Get the entire path of the file.
     pub fn path(&self) -> &[u8] {
-        self.path.as_slice()
+        &self.path
     }
 
     /// Try to get the last write time of this file as a [`SystemTime`].
