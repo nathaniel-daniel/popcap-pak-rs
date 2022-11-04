@@ -5,8 +5,8 @@ pub mod pak;
 pub(crate) mod reader;
 pub(crate) mod writer;
 
-pub use crate::{entry::Entry, pak::Pak};
-use bstr::BString;
+pub use crate::entry::Entry;
+pub use crate::pak::Pak;
 
 /// The magic number of a valid pak file. `[0xc0, 0x4a, 0xc0, 0xba]` XORed with `0xf7`, or "7½7M". This file type is often called "7x7M" as a result.
 pub(crate) const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
@@ -19,8 +19,6 @@ const TICKS_PER_SECOND: i64 = 10_000_000;
 const TICKS_PER_NANOSECOND: u32 = 100;
 const MS_FILETIME_START_SECS: i64 = -11_644_473_600;
 const MS_FILETIME_START_TICKS: i64 = MS_FILETIME_START_SECS * TICKS_PER_SECOND;
-
-const PATH_SEPERATOR_BYTESET: &[u8] = b"\\/";
 
 /// Result type of this library
 pub type PakResult<T> = Result<T, PakError>;
@@ -91,7 +89,7 @@ impl std::error::Error for PakError {
 
 #[derive(Debug)]
 struct Record {
-    pub name: BString,
+    pub name: Vec<u8>,
     pub file_size: u32,
     pub filetime: u64,
 }

@@ -1,7 +1,7 @@
-use crate::{PakError, PakResult};
-use bstr::BStr;
+use crate::PakError;
+use crate::PakResult;
 use byteorder::WriteBytesExt;
-use std::{convert::TryInto, io::Write};
+use std::io::Write;
 
 pub struct PakWriter<W>(W, Vec<u8>);
 
@@ -10,7 +10,7 @@ impl<W: Write> PakWriter<W> {
         Self(writer, Vec::new())
     }
 
-    pub fn write_filename(&mut self, name: &BStr) -> PakResult<()> {
+    pub(crate) fn write_filename(&mut self, name: &[u8]) -> PakResult<()> {
         let length = name.len();
         let length = name
             .len()

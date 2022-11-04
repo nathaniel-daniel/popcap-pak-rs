@@ -1,9 +1,5 @@
 use crate::MS_FILETIME_START_TICKS;
-use crate::PATH_SEPERATOR_BYTESET;
 use crate::TICKS_PER_NANOSECOND;
-use bstr::BStr;
-use bstr::BString;
-use bstr::ByteSlice;
 use std::borrow::Cow;
 use std::io::Cursor;
 use std::io::Read;
@@ -13,31 +9,39 @@ use std::time::SystemTime;
 /// An Entry, representative of a file inside a pakfile.
 #[derive(Debug)]
 pub struct Entry<'a> {
-    pub(crate) path: BString,
+    pub(crate) path: Vec<u8>,
     pub(crate) filetime: u64,
     pub(crate) data: Cursor<Cow<'a, [u8]>>,
 }
 
 impl<'a> Entry<'a> {
+    /// Get the starting index into the path variable of the name of the file, if it exists.
+    ///
+    /// # Returns
+    /// If the path only contains the file name, this returns `None`.
+    fn get_file_name_start_index(&self) -> Option<usize> {
+        self.path
+            .iter()
+            .rev()
+            .position(|&b| b == b'/' || b == b'\\')
+            .map(|index| self.path.len() - index)
+    }
+
     /// Get the directory of the file, or [`None`] if it doesn't exist.
-    pub fn dir(&self) -> Option<&BStr> {
-        let i = self.path.rfind_byteset(PATH_SEPERATOR_BYTESET)?;
-        Some((&self.path[..i]).into())
+    pub fn dir(&self) -> Option<&[u8]> {
+        let index = self.get_file_name_start_index()?;
+        Some(&self.path[..index])
     }
 
     /// Get the name of the file.
-    pub fn name(&self) -> &BStr {
-        let i = self
-            .path
-            .rfind_byteset(PATH_SEPERATOR_BYTESET)
-            .map(|i| i + 1)
-            .unwrap_or(0);
-        (&self.path[i..]).into()
+    pub fn name(&self) -> &[u8] {
+        let index = self.get_file_name_start_index().map(|i| i + 1).unwrap_or(0);
+        &self.path[index..]
     }
 
     /// Get the entire path of the file.
-    pub fn path(&self) -> &BStr {
-        (self.path.as_slice()).into()
+    pub fn path(&self) -> &[u8] {
+        self.path.as_slice()
     }
 
     /// Try to get the last write time of this file as a [`SystemTime`].
@@ -73,7 +77,9 @@ impl<'a> Entry<'a> {
         self.data.get_ref().len()
     }
 
-    /// Decrypt the data and take ownership if it is borrowed. Position data of the file is lost.
+    /// Decrypt the data and take ownership if it is borrowed.
+    ///
+    /// Position data of the file is lost.
     pub fn into_owned(mut self) -> Entry<'static> {
         Entry {
             path: self.path,
