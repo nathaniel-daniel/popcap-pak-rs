@@ -6,7 +6,7 @@ build-wasm:
 	wasm-pack build --release popcap-pak-wasm --out-dir pkg
 	
 setup-wasm-demo:
-	cd popcap-pak-wasm/demo && npm install
+	cd popcap-pak-wasm/demo && npm install --save-dev
 
 build-wasm-demo:
 	cd popcap-pak-wasm/demo && npm run build
