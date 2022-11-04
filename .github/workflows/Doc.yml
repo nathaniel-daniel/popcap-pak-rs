@@ -19,7 +19,7 @@ jobs:
       run: make setup-wasm-demo
       
     - name: Build Demo
-      run: make build-wasm-demo
+      run: make build-wasm-demo NODE_ENV=production
       
     - run: cp -R ./popcap-pak-wasm/demo/dist ./target/doc
       
