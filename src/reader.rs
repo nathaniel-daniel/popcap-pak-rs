@@ -10,7 +10,7 @@ use std::io::Read;
 
 pub struct PakReader<R>(R);
 
-impl<R: Read> PakReader<R> {
+impl<R> PakReader<R> where R: Read{
     pub fn new(reader: R) -> Self {
         Self(reader)
     }
