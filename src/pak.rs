@@ -136,6 +136,6 @@ impl<'a> Pak<'a> {
 
 impl<'a> Default for Pak<'a> {
     fn default() -> Self {
-         Self::new()
+        Self::new()
     }
 }
