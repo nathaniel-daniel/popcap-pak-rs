@@ -33,7 +33,7 @@ impl<'a> Entry<'a> {
 
     /// Get the directory of the file, or [`None`] if it doesn't exist.
     pub fn dir(&self) -> Option<&[u8]> {
-        let index = self.get_file_name_start_index()?;
+        let index = self.get_file_name_start_index()?.saturating_sub(1);
         Some(&self.path[..index])
     }
 

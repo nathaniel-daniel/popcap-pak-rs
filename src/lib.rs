@@ -110,10 +110,17 @@ mod tests {
             let entry_dir = entry.dir_str().transpose().unwrap();
             let entry_name = entry.name_str().unwrap();
 
-            let expected_entry_name = entry_path.rsplit(['/', '\\']).next().unwrap();
+            let (expected_entry_dir, expected_entry_name) = entry_path
+                .rsplit_once(['/', '\\'])
+                .map(|(dir, name)| (Some(dir), name))
+                .unwrap_or((None, entry_path));
             assert!(
                 expected_entry_name == entry_name,
                 "{expected_entry_name} != {entry_name}"
+            );
+            assert!(
+                expected_entry_dir == entry_dir,
+                "{expected_entry_dir:?} != {entry_dir:?}"
             );
 
             println!("Extracting '{}'...", entry_path);
