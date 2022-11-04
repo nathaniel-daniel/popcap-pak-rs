@@ -69,3 +69,9 @@ jobs:
       
     - name: Run Tests
       run: cargo test --all --verbose
+      
+    - name: Setup Demo Build
+      run: make setup-wasm-demo
+      
+    - name: Build Demo
+      run: make build-wasm-demo NODE_ENV=production
