@@ -1,3 +1,5 @@
+#![warn(clippy::as_conversions)]
+
 /// Pak Entry impl
 pub mod entry;
 /// Pak impl
@@ -8,20 +10,23 @@ pub(crate) mod writer;
 pub use crate::entry::Entry;
 pub use crate::pak::Pak;
 
-/// The magic number of a valid pak file. `[0xc0, 0x4a, 0xc0, 0xba]` XORed with `0xf7`, or "7½7M". This file type is often called "7x7M" as a result.
+/// The magic number of a valid pak file.
+///
+/// `[0xc0, 0x4a, 0xc0, 0xba]` XORed with `0xf7`, or "7½7M".
+/// This file type is often called "7x7M" as a result.
 pub(crate) const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
-/// The version of pakfile that this library can read. `[0; 4]`.
+/// The version of pakfile that this library can read.
+///
+/// `[0; 4]`.
 pub(crate) const VERSION: &[u8] = &[0; 4];
 
+const FILEFLAGS_DEFAULT: u8 = 0x00;
 const FILEFLAGS_END: u8 = 0x80;
 
 const TICKS_PER_SECOND: i64 = 10_000_000;
 const TICKS_PER_NANOSECOND: u32 = 100;
 const MS_FILETIME_START_SECS: i64 = -11_644_473_600;
 const MS_FILETIME_START_TICKS: i64 = MS_FILETIME_START_SECS * TICKS_PER_SECOND;
-
-/// Result type of this library
-pub type PakResult<T> = Result<T, PakError>;
 
 /// Error type of this library
 #[derive(Debug)]
@@ -47,10 +52,19 @@ pub enum PakError {
         error: std::num::TryFromIntError,
     },
 
-    /// The data is too long.
+    /// The file data is too long.
     ///
     /// See [`MAX_DATA_LEN`].
-    InvalidDataLength(usize),
+    InvalidFileDataLength {
+        length: usize,
+        error: std::num::TryFromIntError,
+    },
+
+    /// The size of the file data in the record is too long.
+    InvalidRecordFileSize {
+        file_size: u32,
+        error: std::num::TryFromIntError,
+    },
 }
 
 impl From<std::io::Error> for PakError {
@@ -72,7 +86,12 @@ impl std::fmt::Display for PakError {
             Self::InvalidFileNameLength { length, .. } => {
                 write!(f, "invalid file name length '{length}'")
             }
-            Self::InvalidDataLength(length) => write!(f, "invalid data length '{length}'"),
+            Self::InvalidFileDataLength { length, .. } => {
+                write!(f, "invalid file data length '{length}'")
+            }
+            Self::InvalidRecordFileSize { file_size, .. } => {
+                write!(f, "invalid record file size '{file_size}'")
+            }
         }
     }
 }
@@ -82,15 +101,21 @@ impl std::error::Error for PakError {
         match self {
             Self::Io(error) => Some(error),
             Self::InvalidFileNameLength { error, .. } => Some(error),
+            Self::InvalidFileDataLength { error, .. } => Some(error),
+            Self::InvalidRecordFileSize { error, .. } => Some(error),
             _ => None,
         }
     }
 }
 
+/// A record, describing a file
 #[derive(Debug)]
 struct Record {
+    /// The file name
     pub name: Vec<u8>,
+    /// The file size
     pub file_size: u32,
+    /// The file time
     pub filetime: u64,
 }
 

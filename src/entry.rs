@@ -77,6 +77,8 @@ impl<'a> Entry<'a> {
     /// Returns [`None`] if the filetime is invalid and/or could not be converted.
     pub fn filetime(&self) -> Option<SystemTime> {
         let filetime = i64::try_from(self.filetime).ok()? + MS_FILETIME_START_TICKS;
+        // TODO: Write a proper SystemTime type.
+        #[allow(clippy::as_conversions)]
         let offset = Duration::from_nanos(filetime as u64 * u64::from(TICKS_PER_NANOSECOND));
         Some(SystemTime::UNIX_EPOCH + offset)
     }

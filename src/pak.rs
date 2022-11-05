@@ -2,12 +2,10 @@ use crate::entry::Entry;
 use crate::reader::PakReader;
 use crate::writer::PakWriter;
 use crate::PakError;
-use crate::PakResult;
+use crate::FILEFLAGS_DEFAULT;
 use crate::FILEFLAGS_END;
 use crate::MAGIC;
 use crate::VERSION;
-use byteorder::WriteBytesExt;
-use byteorder::LE;
 use std::io::Cursor;
 use std::io::Read;
 use std::io::Write;
@@ -50,7 +48,15 @@ impl<'a> Pak<'a> {
 
         let mut entries = Vec::with_capacity(records.len());
         for record in records {
-            let mut data = vec![0; record.file_size.try_into().unwrap()];
+            let mut data = vec![
+                0;
+                usize::try_from(record.file_size).map_err(|error| {
+                    PakError::InvalidRecordFileSize {
+                        file_size: record.file_size,
+                        error,
+                    }
+                })?
+            ];
             reader.read_exact(&mut data)?;
 
             entries.push(Entry {
@@ -82,7 +88,12 @@ impl<'a> Pak<'a> {
 
         let mut entries = Vec::with_capacity(records.len());
         for record in records {
-            let len = record.file_size as usize;
+            let len = usize::try_from(record.file_size).map_err(|error| {
+                PakError::InvalidRecordFileSize {
+                    file_size: record.file_size,
+                    error,
+                }
+            })?;
             let data = &bytes[..len];
             bytes = &bytes[len..];
 
@@ -112,7 +123,7 @@ impl<'a> Pak<'a> {
     ///
     /// This takes `&mut self` because at the end of this function,
     /// all files' cursors will be at the end of the stream.
-    pub fn write_to<W>(&mut self, writer: W) -> PakResult<()>
+    pub fn write_to<W>(&mut self, writer: W) -> Result<(), PakError>
     where
         W: Write,
     {
@@ -121,15 +132,15 @@ impl<'a> Pak<'a> {
         writer.write_all(VERSION)?;
 
         for entry in self.entries.iter() {
-            writer.write_u8(0x00)?;
+            writer.write_u8(FILEFLAGS_DEFAULT)?;
             writer.write_filename(&entry.path)?;
-            writer.write_u32::<LE>(
-                entry
-                    .size()
-                    .try_into()
-                    .map_err(|_| PakError::InvalidDataLength(entry.size()))?,
-            )?;
-            writer.write_u64::<LE>(entry.filetime)?;
+            writer.write_u32(entry.size().try_into().map_err(|error| {
+                PakError::InvalidFileDataLength {
+                    length: entry.size(),
+                    error,
+                }
+            })?)?;
+            writer.write_u64(entry.filetime)?;
         }
         writer.write_u8(FILEFLAGS_END)?;
 
