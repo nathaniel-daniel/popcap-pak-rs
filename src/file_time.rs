@@ -1,4 +1,4 @@
-#![warn(clippy::arithmetic_side_effects)]
+#![warn(clippy::arithmetic)]
 
 use std::time::Duration;
 use std::time::SystemTime;
