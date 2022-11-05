@@ -23,9 +23,6 @@ const TICKS_PER_NANOSECOND: u32 = 100;
 const MS_FILETIME_START_SECS: i64 = -11_644_473_600;
 const MS_FILETIME_START_TICKS: i64 = MS_FILETIME_START_SECS * TICKS_PER_SECOND;
 
-/// Result type of this library
-pub type PakResult<T> = Result<T, PakError>;
-
 /// Error type of this library
 #[derive(Debug)]
 pub enum PakError {

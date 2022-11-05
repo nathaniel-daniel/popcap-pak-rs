@@ -49,7 +49,15 @@ impl<'a> Pak<'a> {
 
         let mut entries = Vec::with_capacity(records.len());
         for record in records {
-            let mut data = vec![0; record.file_size.try_into().unwrap()];
+            let mut data = vec![
+                0;
+                usize::try_from(record.file_size).map_err(|error| {
+                    PakError::InvalidRecordFileSize {
+                        file_size: record.file_size,
+                        error,
+                    }
+                })?
+            ];
             reader.read_exact(&mut data)?;
 
             entries.push(Entry {
