@@ -21,7 +21,7 @@ jobs:
     - name: Build Demo
       run: make build-wasm-demo NODE_ENV=production
       
-    - run: cp -R ./popcap-pak-wasm/demo/dist/* ./target/doc/*
+    - run: cp -R ./popcap-pak-wasm/demo/dist/ ./target/doc/
       
     - name: Deploy Docs
       uses: peaceiris/actions-gh-pages@v3
