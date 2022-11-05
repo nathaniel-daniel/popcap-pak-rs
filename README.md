@@ -21,3 +21,6 @@ for each record
     record.filesize bytes - File data
 end
 ```
+
+## Demo
+[https://nathaniel-daniel.github.io/popcap-pak-rs/dist/]
