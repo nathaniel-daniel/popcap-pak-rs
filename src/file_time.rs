@@ -181,7 +181,9 @@ mod test {
         let now = SystemTime::now();
         let file_time: FileTime = now.try_into().unwrap();
         let round: SystemTime = file_time.try_into().unwrap();
-        let diff = now - round < Duration::from_nanos(NANOSECONDS_PER_TICK);
+
+        // now is first, as it will be bigger if there are precision issues.
+        let diff = now.duration_since(round).unwrap() < Duration::from_nanos(NANOSECONDS_PER_TICK);
         assert!(diff, "(original) {now:?} != (new) {round:?}");
 
         // let time: SystemTime = FileTime::from_raw(u64::MAX).try_into().unwrap();
