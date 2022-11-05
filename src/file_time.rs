@@ -181,7 +181,7 @@ mod test {
         let now = SystemTime::now();
         let file_time: FileTime = now.try_into().unwrap();
         let round: SystemTime = file_time.try_into().unwrap();
-        assert!(now == round);
+        assert!(now == round, "(original){now:?} != (new){round:?}");
 
         // let time: SystemTime = FileTime::from_raw(u64::MAX).try_into().unwrap();
     }
