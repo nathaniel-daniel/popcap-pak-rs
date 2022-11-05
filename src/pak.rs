@@ -1,7 +1,11 @@
-use crate::{
-    entry::Entry, reader::PakReader, writer::PakWriter, PakError, PakResult, FILEFLAGS_END, MAGIC,
-    VERSION,
-};
+use crate::entry::Entry;
+use crate::reader::PakReader;
+use crate::writer::PakWriter;
+use crate::PakError;
+use crate::PakResult;
+use crate::FILEFLAGS_END;
+use crate::MAGIC;
+use crate::VERSION;
 use byteorder::WriteBytesExt;
 use byteorder::LE;
 use std::io::Cursor;
@@ -34,7 +38,10 @@ impl<'a> Pak<'a> {
     ///
     /// # Returns
     /// Returns a PAK file with ownership over is data, decrypting it all upfront.
-    pub fn from_read<R: Read>(reader: R) -> Result<Pak<'static>, PakError> {
+    pub fn from_read<R>(reader: R) -> Result<Pak<'static>, PakError>
+    where
+        R: Read,
+    {
         let mut reader = PakReader::new(reader);
         reader.read_magic()?;
         reader.read_version()?;
@@ -47,7 +54,7 @@ impl<'a> Pak<'a> {
             reader.read_exact(&mut data)?;
 
             entries.push(Entry {
-                path: record.name,
+                path: record.name.into(),
                 filetime: record.filetime,
                 data: Cursor::new(data.into()),
             });
@@ -80,7 +87,7 @@ impl<'a> Pak<'a> {
             bytes = &bytes[len..];
 
             entries.push(Entry {
-                path: record.name,
+                path: record.name.into(),
                 filetime: record.filetime,
                 data: Cursor::new(data.into()),
             });
@@ -115,7 +122,7 @@ impl<'a> Pak<'a> {
 
         for entry in self.entries.iter() {
             writer.write_u8(0x00)?;
-            writer.write_filename(entry.path.as_slice().into())?;
+            writer.write_filename(&entry.path)?;
             writer.write_u32::<LE>(
                 entry
                     .size()

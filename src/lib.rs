@@ -5,8 +5,8 @@ pub mod pak;
 pub(crate) mod reader;
 pub(crate) mod writer;
 
-pub use crate::{entry::Entry, pak::Pak};
-use bstr::BString;
+pub use crate::entry::Entry;
+pub use crate::pak::Pak;
 
 /// The magic number of a valid pak file. `[0xc0, 0x4a, 0xc0, 0xba]` XORed with `0xf7`, or "7½7M". This file type is often called "7x7M" as a result.
 pub(crate) const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
@@ -19,8 +19,6 @@ const TICKS_PER_SECOND: i64 = 10_000_000;
 const TICKS_PER_NANOSECOND: u32 = 100;
 const MS_FILETIME_START_SECS: i64 = -11_644_473_600;
 const MS_FILETIME_START_TICKS: i64 = MS_FILETIME_START_SECS * TICKS_PER_SECOND;
-
-const PATH_SEPERATOR_BYTESET: &[u8] = b"\\/";
 
 /// Result type of this library
 pub type PakResult<T> = Result<T, PakError>;
@@ -91,7 +89,7 @@ impl std::error::Error for PakError {
 
 #[derive(Debug)]
 struct Record {
-    pub name: BString,
+    pub name: Vec<u8>,
     pub file_size: u32,
     pub filetime: u64,
 }
@@ -99,7 +97,6 @@ struct Record {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bstr::ByteSlice;
     use std::path::Path;
 
     const EXTRACT_PATH: &str = "test-extract";
@@ -109,13 +106,30 @@ mod tests {
         let _ = std::fs::remove_dir_all(extract_dir);
 
         for entry in pak.entries.iter_mut() {
-            println!("Extracting '{}'...", entry.path());
-            if let Some(dir) = entry.dir() {
-                let entry_extract_dir = extract_dir.join(dir.to_path_lossy());
+            let entry_path = entry.path_str().unwrap();
+            let entry_dir = entry.dir_str().transpose().unwrap();
+            let entry_name = entry.name_str().unwrap();
+
+            let (expected_entry_dir, expected_entry_name) = entry_path
+                .rsplit_once(['/', '\\'])
+                .map(|(dir, name)| (Some(dir), name))
+                .unwrap_or((None, entry_path));
+            assert!(
+                expected_entry_name == entry_name,
+                "{expected_entry_name} != {entry_name}"
+            );
+            assert!(
+                expected_entry_dir == entry_dir,
+                "{expected_entry_dir:?} != {entry_dir:?}"
+            );
+
+            println!("Extracting '{}'...", entry_path);
+            if let Some(dir) = entry_dir {
+                let entry_extract_dir = extract_dir.join(dir);
                 std::fs::create_dir_all(&entry_extract_dir).unwrap();
             }
 
-            let entry_extract_path = extract_dir.join(entry.path().to_path_lossy());
+            let entry_extract_path = extract_dir.join(entry_path);
             let mut f = std::fs::File::create(&entry_extract_path).unwrap();
             std::io::copy(entry, &mut f).unwrap();
         }
