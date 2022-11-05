@@ -10,12 +10,12 @@ pub(crate) mod writer;
 pub use crate::entry::Entry;
 pub use crate::pak::Pak;
 
-/// The magic number of a valid pak file. 
+/// The magic number of a valid pak file.
 ///
-/// `[0xc0, 0x4a, 0xc0, 0xba]` XORed with `0xf7`, or "7½7M". 
+/// `[0xc0, 0x4a, 0xc0, 0xba]` XORed with `0xf7`, or "7½7M".
 /// This file type is often called "7x7M" as a result.
 pub(crate) const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
-/// The version of pakfile that this library can read. 
+/// The version of pakfile that this library can read.
 ///
 /// `[0; 4]`.
 pub(crate) const VERSION: &[u8] = &[0; 4];
@@ -102,15 +102,20 @@ impl std::error::Error for PakError {
             Self::Io(error) => Some(error),
             Self::InvalidFileNameLength { error, .. } => Some(error),
             Self::InvalidFileDataLength { error, .. } => Some(error),
+            Self::InvalidRecordFileSize { error, .. } => Some(error),
             _ => None,
         }
     }
 }
 
+/// A record, describing a file
 #[derive(Debug)]
 struct Record {
+    /// The file name
     pub name: Vec<u8>,
+    /// The file size
     pub file_size: u32,
+    /// The file time
     pub filetime: u64,
 }
 
