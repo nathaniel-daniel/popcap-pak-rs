@@ -1,3 +1,5 @@
+// #![warn(clippy::as_conversions)]
+
 /// Pak Entry impl
 pub mod entry;
 /// Pak impl
@@ -47,10 +49,13 @@ pub enum PakError {
         error: std::num::TryFromIntError,
     },
 
-    /// The data is too long.
+    /// The file data is too long.
     ///
     /// See [`MAX_DATA_LEN`].
-    InvalidDataLength(usize),
+    InvalidFileDataLength {
+        length: usize,
+        error: std::num::TryFromIntError,
+    },
 }
 
 impl From<std::io::Error> for PakError {
@@ -72,7 +77,9 @@ impl std::fmt::Display for PakError {
             Self::InvalidFileNameLength { length, .. } => {
                 write!(f, "invalid file name length '{length}'")
             }
-            Self::InvalidDataLength(length) => write!(f, "invalid data length '{length}'"),
+            Self::InvalidFileDataLength { length, .. } => {
+                write!(f, "invalid file data length '{length}'")
+            }
         }
     }
 }
@@ -82,6 +89,7 @@ impl std::error::Error for PakError {
         match self {
             Self::Io(error) => Some(error),
             Self::InvalidFileNameLength { error, .. } => Some(error),
+            Self::InvalidFileDataLength { error, .. } => Some(error),
             _ => None,
         }
     }

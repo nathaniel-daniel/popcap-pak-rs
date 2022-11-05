@@ -121,12 +121,12 @@ impl<'a> Pak<'a> {
         for entry in self.entries.iter() {
             writer.write_u8(0x00)?;
             writer.write_filename(&entry.path)?;
-            writer.write_u32(
-                entry
-                    .size()
-                    .try_into()
-                    .map_err(|_| PakError::InvalidDataLength(entry.size()))?,
-            )?;
+            writer.write_u32(entry.size().try_into().map_err(|error| {
+                PakError::InvalidFileDataLength {
+                    length: entry.size(),
+                    error,
+                }
+            })?)?;
             writer.write_u64(entry.filetime)?;
         }
         writer.write_u8(FILEFLAGS_END)?;
