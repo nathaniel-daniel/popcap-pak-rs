@@ -3,7 +3,7 @@
 /// Pak Entry impl
 mod entry;
 /// A wrapper for file times
-pub(crate) mod file_time;
+pub mod file_time;
 /// Pak impl
 mod pak;
 /// Util for reading Pak files.
