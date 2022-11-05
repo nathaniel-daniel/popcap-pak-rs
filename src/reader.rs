@@ -4,8 +4,6 @@ use crate::Record;
 use crate::FILEFLAGS_END;
 use crate::MAGIC;
 use crate::VERSION;
-use byteorder::ReadBytesExt;
-use byteorder::LE;
 use std::io::Read;
 
 pub struct PakReader<R>(R);
@@ -54,8 +52,8 @@ where
 
         while flags & FILEFLAGS_END == 0 {
             let name = self.read_filename()?;
-            let file_size = self.read_u32::<LE>()?;
-            let filetime = self.read_u64::<LE>()?;
+            let file_size = self.read_u32()?;
+            let filetime = self.read_u64()?;
             flags = self.read_u8()?;
 
             records.push(Record {
@@ -66,6 +64,27 @@ where
         }
 
         Ok(records)
+    }
+
+    /// Read a u8
+    pub(crate) fn read_u8(&mut self) -> Result<u8, PakError> {
+        let mut buffer = [0; std::mem::size_of::<u8>()];
+        self.read_exact(&mut buffer)?;
+        Ok(buffer[0])
+    }
+
+    /// Read a u32, little endian
+    pub(crate) fn read_u32(&mut self) -> Result<u32, PakError> {
+        let mut buffer = [0; std::mem::size_of::<u32>()];
+        self.read_exact(&mut buffer)?;
+        Ok(u32::from_le_bytes(buffer))
+    }
+
+    /// Read a u64, little endian
+    pub(crate) fn read_u64(&mut self) -> Result<u64, PakError> {
+        let mut buffer = [0; std::mem::size_of::<u64>()];
+        self.read_exact(&mut buffer)?;
+        Ok(u64::from_le_bytes(buffer))
     }
 
     pub fn into_reader(self) -> R {

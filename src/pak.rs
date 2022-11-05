@@ -6,8 +6,6 @@ use crate::PakResult;
 use crate::FILEFLAGS_END;
 use crate::MAGIC;
 use crate::VERSION;
-use byteorder::WriteBytesExt;
-use byteorder::LE;
 use std::io::Cursor;
 use std::io::Read;
 use std::io::Write;
@@ -123,13 +121,13 @@ impl<'a> Pak<'a> {
         for entry in self.entries.iter() {
             writer.write_u8(0x00)?;
             writer.write_filename(&entry.path)?;
-            writer.write_u32::<LE>(
+            writer.write_u32(
                 entry
                     .size()
                     .try_into()
                     .map_err(|_| PakError::InvalidDataLength(entry.size()))?,
             )?;
-            writer.write_u64::<LE>(entry.filetime)?;
+            writer.write_u64(entry.filetime)?;
         }
         writer.write_u8(FILEFLAGS_END)?;
 
