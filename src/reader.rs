@@ -6,16 +6,19 @@ use crate::MAGIC;
 use crate::VERSION;
 use std::io::Read;
 
+/// A struct to help read pak files
 pub struct PakReader<R>(R);
 
 impl<R> PakReader<R>
 where
     R: Read,
 {
+    /// Make a new pak reader
     pub fn new(reader: R) -> Self {
         Self(reader)
     }
 
+    /// Read and validate the magic number.
     pub(crate) fn read_magic(&mut self) -> PakResult<()> {
         let mut magic = [0; 4];
         self.read_exact(&mut magic)?;
@@ -26,6 +29,7 @@ where
         }
     }
 
+    /// Read and validate the version
     pub(crate) fn read_version(&mut self) -> PakResult<()> {
         let mut version = [0; 4];
         self.read_exact(&mut version)?;
@@ -37,6 +41,7 @@ where
         }
     }
 
+    /// Read the file name
     pub(crate) fn read_filename(&mut self) -> PakResult<Vec<u8>> {
         let file_length = usize::from(self.read_u8()?);
         let mut file_name = vec![0; file_length];
@@ -87,6 +92,7 @@ where
         Ok(u64::from_le_bytes(buffer))
     }
 
+    /// Get the inner reader for this file.
     pub fn into_reader(self) -> R {
         self.0
     }

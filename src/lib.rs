@@ -1,4 +1,4 @@
-// #![warn(clippy::as_conversions)]
+#![warn(clippy::as_conversions)]
 
 /// Pak Entry impl
 pub mod entry;
@@ -15,6 +15,7 @@ pub(crate) const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
 /// The version of pakfile that this library can read. `[0; 4]`.
 pub(crate) const VERSION: &[u8] = &[0; 4];
 
+const FILEFLAGS_DEFAULT: u8 = 0x00;
 const FILEFLAGS_END: u8 = 0x80;
 
 const TICKS_PER_SECOND: i64 = 10_000_000;
@@ -56,6 +57,12 @@ pub enum PakError {
         length: usize,
         error: std::num::TryFromIntError,
     },
+
+    /// The size of the file data in the record is too long.
+    InvalidRecordFileSize {
+        file_size: u32,
+        error: std::num::TryFromIntError,
+    },
 }
 
 impl From<std::io::Error> for PakError {
@@ -79,6 +86,9 @@ impl std::fmt::Display for PakError {
             }
             Self::InvalidFileDataLength { length, .. } => {
                 write!(f, "invalid file data length '{length}'")
+            }
+            Self::InvalidRecordFileSize { file_size, .. } => {
+                write!(f, "invalid record file size '{file_size}'")
             }
         }
     }

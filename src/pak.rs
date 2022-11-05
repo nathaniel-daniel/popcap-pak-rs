@@ -3,6 +3,7 @@ use crate::reader::PakReader;
 use crate::writer::PakWriter;
 use crate::PakError;
 use crate::PakResult;
+use crate::FILEFLAGS_DEFAULT;
 use crate::FILEFLAGS_END;
 use crate::MAGIC;
 use crate::VERSION;
@@ -80,7 +81,12 @@ impl<'a> Pak<'a> {
 
         let mut entries = Vec::with_capacity(records.len());
         for record in records {
-            let len = record.file_size as usize;
+            let len = usize::try_from(record.file_size).map_err(|error| {
+                PakError::InvalidRecordFileSize {
+                    file_size: record.file_size,
+                    error,
+                }
+            })?;
             let data = &bytes[..len];
             bytes = &bytes[len..];
 
@@ -119,7 +125,7 @@ impl<'a> Pak<'a> {
         writer.write_all(VERSION)?;
 
         for entry in self.entries.iter() {
-            writer.write_u8(0x00)?;
+            writer.write_u8(FILEFLAGS_DEFAULT)?;
             writer.write_filename(&entry.path)?;
             writer.write_u32(entry.size().try_into().map_err(|error| {
                 PakError::InvalidFileDataLength {
