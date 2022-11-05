@@ -1,4 +1,4 @@
-#![warn(clippy::arithmetic)]
+#![warn(clippy::integer_arithmetic)]
 
 use std::time::Duration;
 use std::time::SystemTime;
@@ -110,7 +110,7 @@ impl TryFrom<FileTime> for SystemTime {
         let offset_seconds = Duration::from_secs(secs_part);
         // 0 < the # of nanoseonds in a second < u64::MAX
         // Clippy: I don't think this can overflow/panic fo u64s.
-        #[allow(clippy::arithmetic_side_effects)]
+        #[allow(clippy::integer_arithmetic)]
         let nanos_part = u64::try_from(nanos % u128::from(NANOSECONDS_PER_SECOND)).unwrap();
         let offset_nanos = Duration::from_nanos(nanos_part);
         let offset = offset_seconds
