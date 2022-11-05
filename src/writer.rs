@@ -1,9 +1,12 @@
 use crate::PakError;
-use crate::PakResult;
 use std::io::Write;
 
+/// A writer for pak files
 pub struct PakWriter<W> {
+    /// The inner writer
     writer: W,
+
+    /// The buffer for ^0xf7ing the data.
     buffer: Vec<u8>,
 }
 
@@ -20,7 +23,7 @@ where
     }
 
     /// Write a filename.
-    pub(crate) fn write_filename(&mut self, name: &[u8]) -> PakResult<()> {
+    pub(crate) fn write_filename(&mut self, name: &[u8]) -> Result<(), PakError> {
         let length = name.len();
         let length = name
             .len()
@@ -32,19 +35,19 @@ where
     }
 
     /// Write a `u8`.
-    pub(crate) fn write_u8(&mut self, n: u8) -> PakResult<()> {
+    pub(crate) fn write_u8(&mut self, n: u8) -> Result<(), PakError> {
         self.write_all(&[n])?;
         Ok(())
     }
 
     /// Write a `u32`.
-    pub(crate) fn write_u32(&mut self, n: u32) -> PakResult<()> {
+    pub(crate) fn write_u32(&mut self, n: u32) -> Result<(), PakError> {
         self.write_all(&n.to_le_bytes())?;
         Ok(())
     }
 
     /// Write a `u64`.
-    pub(crate) fn write_u64(&mut self, n: u64) -> PakResult<()> {
+    pub(crate) fn write_u64(&mut self, n: u64) -> Result<(), PakError> {
         self.write_all(&n.to_le_bytes())?;
         Ok(())
     }

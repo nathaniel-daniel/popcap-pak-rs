@@ -1,5 +1,4 @@
 use crate::PakError;
-use crate::PakResult;
 use crate::Record;
 use crate::FILEFLAGS_END;
 use crate::MAGIC;
@@ -19,7 +18,7 @@ where
     }
 
     /// Read and validate the magic number.
-    pub(crate) fn read_magic(&mut self) -> PakResult<()> {
+    pub(crate) fn read_magic(&mut self) -> Result<(), PakError> {
         let mut magic = [0; 4];
         self.read_exact(&mut magic)?;
         if magic != MAGIC {
@@ -30,7 +29,7 @@ where
     }
 
     /// Read and validate the version
-    pub(crate) fn read_version(&mut self) -> PakResult<()> {
+    pub(crate) fn read_version(&mut self) -> Result<(), PakError> {
         let mut version = [0; 4];
         self.read_exact(&mut version)?;
 
@@ -42,7 +41,7 @@ where
     }
 
     /// Read the file name
-    pub(crate) fn read_filename(&mut self) -> PakResult<Vec<u8>> {
+    pub(crate) fn read_filename(&mut self) -> Result<Vec<u8>, PakError> {
         let file_length = usize::from(self.read_u8()?);
         let mut file_name = vec![0; file_length];
 
@@ -51,7 +50,7 @@ where
         Ok(file_name)
     }
 
-    pub(crate) fn read_records(&mut self) -> PakResult<Vec<Record>> {
+    pub(crate) fn read_records(&mut self) -> Result<Vec<Record>, PakError> {
         let mut records = Vec::new();
         let mut flags = self.read_u8()?;
 

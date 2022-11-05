@@ -2,7 +2,6 @@ use crate::entry::Entry;
 use crate::reader::PakReader;
 use crate::writer::PakWriter;
 use crate::PakError;
-use crate::PakResult;
 use crate::FILEFLAGS_DEFAULT;
 use crate::FILEFLAGS_END;
 use crate::MAGIC;
@@ -124,7 +123,7 @@ impl<'a> Pak<'a> {
     ///
     /// This takes `&mut self` because at the end of this function,
     /// all files' cursors will be at the end of the stream.
-    pub fn write_to<W>(&mut self, writer: W) -> PakResult<()>
+    pub fn write_to<W>(&mut self, writer: W) -> Result<(), PakError>
     where
         W: Write,
     {
