@@ -61,7 +61,7 @@ impl<'a> Pak<'a> {
 
             entries.push(Entry {
                 path: record.name.into(),
-                filetime: record.filetime,
+                file_time: record.file_time,
                 data: Cursor::new(data.into()),
             });
         }
@@ -99,7 +99,7 @@ impl<'a> Pak<'a> {
 
             entries.push(Entry {
                 path: record.name.into(),
-                filetime: record.filetime,
+                file_time: record.file_time,
                 data: Cursor::new(data.into()),
             });
         }
@@ -140,7 +140,7 @@ impl<'a> Pak<'a> {
                     error,
                 }
             })?)?;
-            writer.write_u64(entry.filetime)?;
+            writer.write_u64(entry.file_time.into_raw())?;
         }
         writer.write_u8(FILEFLAGS_END)?;
 

@@ -1,3 +1,4 @@
+use crate::FileTime;
 use crate::PakError;
 use crate::Record;
 use crate::FILEFLAGS_END;
@@ -57,13 +58,13 @@ where
         while flags & FILEFLAGS_END == 0 {
             let name = self.read_filename()?;
             let file_size = self.read_u32()?;
-            let filetime = self.read_u64()?;
+            let file_time = FileTime::from_raw(self.read_u64()?);
             flags = self.read_u8()?;
 
             records.push(Record {
                 name,
                 file_size,
-                filetime,
+                file_time,
             });
         }
 
