@@ -1,13 +1,18 @@
 #![warn(clippy::as_conversions)]
 
 /// Pak Entry impl
-pub mod entry;
+mod entry;
+/// A wrapper for file times
+pub mod file_time;
 /// Pak impl
-pub mod pak;
+mod pak;
+/// Util for reading Pak files.
 pub(crate) mod reader;
+/// Util for writing Pak files.
 pub(crate) mod writer;
 
 pub use crate::entry::Entry;
+pub use crate::file_time::FileTime;
 pub use crate::pak::Pak;
 
 /// The magic number of a valid pak file.
@@ -20,13 +25,10 @@ pub(crate) const MAGIC: &[u8] = &[0xc0, 0x4a, 0xc0, 0xba];
 /// `[0; 4]`.
 pub(crate) const VERSION: &[u8] = &[0; 4];
 
+/// The default file flag
 const FILEFLAGS_DEFAULT: u8 = 0x00;
+/// The end file flag.
 const FILEFLAGS_END: u8 = 0x80;
-
-const TICKS_PER_SECOND: i64 = 10_000_000;
-const TICKS_PER_NANOSECOND: u32 = 100;
-const MS_FILETIME_START_SECS: i64 = -11_644_473_600;
-const MS_FILETIME_START_TICKS: i64 = MS_FILETIME_START_SECS * TICKS_PER_SECOND;
 
 /// Error type of this library
 #[derive(Debug)]
@@ -116,7 +118,7 @@ struct Record {
     /// The file size
     pub file_size: u32,
     /// The file time
-    pub filetime: u64,
+    pub file_time: FileTime,
 }
 
 #[cfg(test)]

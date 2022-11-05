@@ -1,10 +1,7 @@
-use crate::MS_FILETIME_START_TICKS;
-use crate::TICKS_PER_NANOSECOND;
+use crate::FileTime;
 use std::borrow::Cow;
 use std::io::Cursor;
 use std::io::Read;
-use std::time::Duration;
-use std::time::SystemTime;
 
 /// An Entry, representative of a file inside a pakfile.
 #[derive(Debug)]
@@ -14,7 +11,7 @@ pub struct Entry<'a> {
     /// The encoding is unspecified,
     /// but this is only ascii in PopCap Games.
     pub(crate) path: Box<[u8]>,
-    pub(crate) filetime: u64,
+    pub(crate) file_time: FileTime,
     pub(crate) data: Cursor<Cow<'a, [u8]>>,
 }
 
@@ -72,15 +69,11 @@ impl<'a> Entry<'a> {
         std::str::from_utf8(self.path())
     }
 
-    /// Try to get the last write time of this file as a [`SystemTime`].
+    /// Get the [`FileTime`].
     ///
-    /// Returns [`None`] if the filetime is invalid and/or could not be converted.
-    pub fn filetime(&self) -> Option<SystemTime> {
-        let filetime = i64::try_from(self.filetime).ok()? + MS_FILETIME_START_TICKS;
-        // TODO: Write a proper SystemTime type.
-        #[allow(clippy::as_conversions)]
-        let offset = Duration::from_nanos(filetime as u64 * u64::from(TICKS_PER_NANOSECOND));
-        Some(SystemTime::UNIX_EPOCH + offset)
+    /// This represents access and modification time; there is no distinction.
+    pub fn file_time(&self) -> FileTime {
+        self.file_time
     }
 
     /// Get an iterator over all the bytes in the file.
@@ -113,7 +106,7 @@ impl<'a> Entry<'a> {
     pub fn into_owned(mut self) -> Entry<'static> {
         Entry {
             path: self.path,
-            filetime: self.filetime,
+            file_time: self.file_time,
             data: {
                 // TODO: Preserve position data. Just reuse the old cursor, swap new data in/out.
                 match self.data.get_mut() {
@@ -138,7 +131,7 @@ impl<'a> Read for Entry<'a> {
 impl<'a> PartialEq for Entry<'a> {
     fn eq(&self, other: &Self) -> bool {
         self.path == other.path // TODO: Consider not including filetime/path checks
-            && self.filetime == other.filetime
+            && self.file_time == other.file_time
             && self.iter_data().eq(other.iter_data())
     }
 }
