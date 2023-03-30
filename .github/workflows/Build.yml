@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  Lint:
+  lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
@@ -31,7 +31,8 @@ jobs:
       - name: Clippy
         run: cargo clippy --tests --all --all-features -- -D warnings
         
-  Deny:
+  deny:
+    name: Deny
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,7 +41,8 @@ jobs:
       - name: Deny
         uses: EmbarkStudios/cargo-deny-action@v1
         
-  Build:
+  build:
+    name: Build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -65,7 +67,7 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         
     - name: Install wasm-pack
-      run: npm install -g wasm-pack
+      run: cargo install wasm-pack
       
     - name: Build
       run: cargo build --all --verbose
