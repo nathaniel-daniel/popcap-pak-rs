@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["popcap_pak","popcap_pak_wasm"];
