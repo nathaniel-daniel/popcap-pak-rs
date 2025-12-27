@@ -3,5 +3,9 @@ updates:
 - package-ecosystem: cargo
   directory: "/"
   schedule:
-    interval: weekly
+    interval: monthly
+  groups:
+    default:
+      patterns:
+        - "*"
   open-pull-requests-limit: 10
