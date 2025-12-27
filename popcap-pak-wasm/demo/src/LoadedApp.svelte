@@ -88,7 +88,7 @@
                 {:else if fileType == 'text'}
                     {String.fromCharCode(...fileData)}
                 {:else if fileType == 'sound'}
-                    <audio controls="controls" src={URL.createObjectURL(new Blob([fileData.buffer]))} type="audio/mp3"/>
+                    <audio controls="controls" src={URL.createObjectURL(new Blob([fileData.buffer]))} type="audio/mp3"> </audio>
                 {:else}
                     Unknown File Type
                 {/if}
