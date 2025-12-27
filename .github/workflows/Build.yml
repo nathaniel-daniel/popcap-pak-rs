@@ -1,10 +1,10 @@
 name: Build
-  
+
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   lint:
@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
+
       - name: Cache
         uses: actions/cache@v3
         with:
@@ -23,60 +23,60 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          
+          key: ${{ runner.os }}-lint-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Fmt
         run: cargo fmt --all -- --check
-         
+
       - name: Clippy
         run: cargo clippy --tests --all --all-features -- -D warnings
-        
+
   deny:
     name: Deny
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
+
       - name: Deny
-        uses: EmbarkStudios/cargo-deny-action@v1
-        
+        uses: EmbarkStudios/cargo-deny-action@v2
+
   build:
     name: Build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: 
+        os:
           - ubuntu-latest
           - macos-latest
           - windows-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      
-    - name: Cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cargo/bin/
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-          target/
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        
-    - name: Install wasm-pack
-      run: cargo install wasm-pack --force
-      
-    - name: Build
-      run: cargo build --all --verbose
-      
-    - name: Run Tests
-      run: cargo test --all --verbose
-      
-    - name: Setup Demo Build
-      run: make setup-wasm-demo
-      
-    - name: Build Demo
-      run: make build-wasm-demo NODE_ENV=production
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-build-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --force
+
+      - name: Build
+        run: cargo build --all --verbose
+
+      - name: Run Tests
+        run: cargo test --all --verbose
+
+      - name: Setup Demo Build
+        run: make setup-wasm-demo
+
+      - name: Build Demo
+        run: make build-wasm-demo NODE_ENV=production
