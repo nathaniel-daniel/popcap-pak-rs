@@ -28,5 +28,6 @@ function buildWasmPack() {
 }
 
 export default defineConfig({
+  base: '',
   plugins: [buildWasmPack(), svelte({}), wasm()],
 });
