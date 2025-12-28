@@ -12,6 +12,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Install wasm-pack
+        run: npm install -g wasm-pack
+
       - name: Build Documentation
         run: cargo doc --all --no-deps
 

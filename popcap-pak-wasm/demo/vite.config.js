@@ -7,7 +7,7 @@ import { promisify } from "node:util";
 
 const wasmPackCommandArgs = [
   "build",
-  "..",
+  path.resolve(__dirname, ".."),
   "--release",
   // These are enabled by default in the Rust std anyway.
   "--reference-types",
