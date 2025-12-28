@@ -1,11 +1,11 @@
-use crate::entry::Entry;
-use crate::reader::PakReader;
-use crate::writer::PakWriter;
-use crate::PakError;
 use crate::FILEFLAGS_DEFAULT;
 use crate::FILEFLAGS_END;
 use crate::MAGIC;
+use crate::PakError;
 use crate::VERSION;
+use crate::entry::Entry;
+use crate::reader::PakReader;
+use crate::writer::PakWriter;
 use std::io::Cursor;
 use std::io::Read;
 use std::io::Write;

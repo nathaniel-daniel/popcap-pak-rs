@@ -1,12 +1,13 @@
 [package]
 name = "popcap-pak"
 version = "0.0.0"
-edition = "2021"
+edition = "2024"
 license = "MIT or Apache-2.0"
 
 [dependencies]
 
 [workspace]
+resolver = "3"
 members = [
     "popcap-pak-wasm",
 ]
