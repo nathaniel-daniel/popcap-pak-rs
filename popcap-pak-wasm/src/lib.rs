@@ -1,12 +1,12 @@
 use js_sys::ArrayBuffer;
 use js_sys::Uint8Array;
 use std::cell::RefCell;
-use std::collections::hash_map::Entry as HashMapEntry;
 use std::collections::HashMap;
+use std::collections::hash_map::Entry as HashMapEntry;
 use std::rc::Rc;
 use std::rc::Weak;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::*;
 
 struct PakState {
     pak: popcap_pak::Pak<'static>,

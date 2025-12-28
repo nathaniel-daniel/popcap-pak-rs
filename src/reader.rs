@@ -1,8 +1,8 @@
+use crate::FILEFLAGS_END;
 use crate::FileTime;
+use crate::MAGIC;
 use crate::PakError;
 use crate::Record;
-use crate::FILEFLAGS_END;
-use crate::MAGIC;
 use crate::VERSION;
 use std::io::Read;
 
