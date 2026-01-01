@@ -1,6 +1,6 @@
 <script>
   import DirectoryNode from "./DirectoryNode.svelte";
-  export let PopCapPak;
+  export let popcapPak;
 
   let pakFile = null;
   let pakFileDir = {};
@@ -20,7 +20,7 @@
       .arrayBuffer()
       .catch(console.error)
       .then((arrayBuffer) => {
-        let newPakFile = new PopCapPak.Pak(arrayBuffer);
+        let newPakFile = new popcapPak.Pak(arrayBuffer);
         let newPakFileDir = {};
         for (let i = 0; i < newPakFile.length; i++) {
           let entry = newPakFile.entry(i);
@@ -81,7 +81,7 @@
         style="flex-grow: 1; flex-basis: auto; overflow-y: scroll; height: 0px;"
       >
         {#each Object.entries(pakFileDir) as [name, node]}
-          <DirectoryNode {name} {node} {PopCapPak} on:view={handleView} />
+          <DirectoryNode {name} {node} {popcapPak} on:view={handleView} />
         {/each}
       </div>
     </div>
