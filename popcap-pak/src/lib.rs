@@ -3,7 +3,7 @@
 /// Pak Entry impl
 mod entry;
 /// A wrapper for file times
-pub mod file_time;
+mod file_time;
 /// Pak impl
 mod pak;
 /// Util for reading Pak files.
@@ -11,9 +11,11 @@ pub(crate) mod reader;
 /// Util for writing Pak files.
 pub(crate) mod writer;
 
-pub use crate::entry::Entry;
-pub use crate::file_time::FileTime;
-pub use crate::pak::Pak;
+pub use self::entry::Entry;
+pub use self::file_time::FileTime;
+pub use self::file_time::TryFromFileTimeError;
+pub use self::file_time::TryFromSystemTimeError;
+pub use self::pak::Pak;
 
 /// The magic number of a valid pak file.
 ///

@@ -3,10 +3,10 @@
 
   export let name;
   export let node;
-  export let PopCapPak;
+  export let popcapPak;
 
   let expanded = false;
-  let isLeaf = node instanceof PopCapPak.Entry;
+  let isLeaf = node instanceof popcapPak.Entry;
   const dispatch = createEventDispatcher();
 
   function handleOnClick(event) {
@@ -45,7 +45,7 @@
   {#if expanded}
     <div style="padding-left: 1em;">
       {#each Object.entries(node) as [name, node]}
-        <svelte:self {name} {node} {PopCapPak} on:view />
+        <svelte:self {name} {node} {popcapPak} on:view />
       {/each}
     </div>
   {/if}

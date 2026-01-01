@@ -4,6 +4,7 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 import path from "node:path";
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 const wasmPackCommandArgs = [
   "build",
@@ -11,6 +12,7 @@ const wasmPackCommandArgs = [
   "--release",
   // These are enabled by default in the Rust std anyway.
   "--reference-types",
+  "--weak-refs",
   "--out-dir",
   path.join(__dirname, "pkg"),
 ];
@@ -28,6 +30,6 @@ function buildWasmPack() {
 }
 
 export default defineConfig({
-  base: '',
-  plugins: [buildWasmPack(), svelte({}), wasm()],
+  base: "",
+  plugins: [buildWasmPack(), svelte({}), wasm(), topLevelAwait()],
 });
