@@ -12,6 +12,7 @@ const wasmPackCommandArgs = [
   "--release",
   // These are enabled by default in the Rust std anyway.
   "--reference-types",
+  "--weak-refs",
   "--out-dir",
   path.join(__dirname, "pkg"),
 ];
