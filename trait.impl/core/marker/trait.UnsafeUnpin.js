@@ -1,0 +1,9 @@
+(function() {
+    var implementors = Object.fromEntries([["popcap_pak",[["impl UnsafeUnpin for <a class=\"enum\" href=\"popcap_pak/enum.PakError.html\" title=\"enum popcap_pak::PakError\">PakError</a>",1,["popcap_pak::PakError"]],["impl UnsafeUnpin for <a class=\"enum\" href=\"popcap_pak/enum.TryFromFileTimeError.html\" title=\"enum popcap_pak::TryFromFileTimeError\">TryFromFileTimeError</a>",1,["popcap_pak::file_time::TryFromFileTimeError"]],["impl UnsafeUnpin for <a class=\"enum\" href=\"popcap_pak/enum.TryFromSystemTimeError.html\" title=\"enum popcap_pak::TryFromSystemTimeError\">TryFromSystemTimeError</a>",1,["popcap_pak::file_time::TryFromSystemTimeError"]],["impl UnsafeUnpin for <a class=\"struct\" href=\"popcap_pak/struct.FileTime.html\" title=\"struct popcap_pak::FileTime\">FileTime</a>",1,["popcap_pak::file_time::FileTime"]],["impl&lt;'a&gt; UnsafeUnpin for <a class=\"struct\" href=\"popcap_pak/struct.Entry.html\" title=\"struct popcap_pak::Entry\">Entry</a>&lt;'a&gt;",1,["popcap_pak::entry::Entry"]],["impl&lt;'a&gt; UnsafeUnpin for <a class=\"struct\" href=\"popcap_pak/struct.Pak.html\" title=\"struct popcap_pak::Pak\">Pak</a>&lt;'a&gt;",1,["popcap_pak::pak::Pak"]]]],["popcap_pak_wasm",[["impl UnsafeUnpin for <a class=\"struct\" href=\"popcap_pak_wasm/struct.Entry.html\" title=\"struct popcap_pak_wasm::Entry\">Entry</a>",1,["popcap_pak_wasm::Entry"]],["impl UnsafeUnpin for <a class=\"struct\" href=\"popcap_pak_wasm/struct.Pak.html\" title=\"struct popcap_pak_wasm::Pak\">Pak</a>",1,["popcap_pak_wasm::Pak"]]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[1139,348]}

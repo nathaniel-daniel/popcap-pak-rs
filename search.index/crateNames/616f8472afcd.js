@@ -1,0 +1,1 @@
+rd_("jpopcap_pakopopcap_pak_wasm")
